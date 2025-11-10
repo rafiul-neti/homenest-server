@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const admin = require("firebase-admin");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 2000;
 
@@ -28,6 +28,67 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     await client.connect();
+
+    const database = client.db("homenest");
+    const propertyColl = database.collection("all-properties");
+    const userColl = database.collection("users");
+
+    // property related api's
+    app.get("/all-properties", async (req, res) => {
+      const projectFields = {
+        _id: 1,
+        "property-name": 1,
+        "about-property": 1,
+        price: 1,
+        location: 1,
+        category: 1,
+        "property-image": 1,
+        "posted-by": 1,
+      };
+      const cursor = propertyColl
+        .find()
+        .sort({ "posted-date": 1 })
+        .project(projectFields);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/property/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await propertyColl.findOne(query);
+      res.send(result);
+    });
+
+    app.post("/add-property", async (req, res) => {
+      const newProperty = req.body;
+      const result = await propertyColl.insertOne(newProperty);
+      res.send(result);
+    });
+
+    app.patch("/update-property/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedProperty = req.body;
+      const query = { _id: new ObjectId(id) };
+      const update = { $set: updatedProperty };
+      const result = await propertyColl.updateOne(query, update);
+      res.send(result);
+    });
+
+    app.delete("/my-properties/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await propertyColl.deleteOne(query);
+      res.send(result);
+    });
+
+    // user related api's
+    app.post("/user", async (req, res) => {
+      const newUser = req.body;
+      const result = await userColl.insertOne(newUser);
+      res.send(result);
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       `Pinged your deployment. You successfully connected to MongoDB!`
