@@ -42,12 +42,32 @@ async function run() {
         price: 1,
         location: 1,
         category: 1,
-        "property-image": 1,
+        thumbnail: 1,
         "posted-by": 1,
       };
       const cursor = propertyColl
         .find()
         .sort({ "posted-date": 1 })
+        .project(projectFields);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/latest-properties", async (req, res) => {
+      const projectFields = {
+        _id: 1,
+        "property-name": 1,
+        "about-property": 1,
+        price: 1,
+        location: 1,
+        category: 1,
+        thumbnail: 1,
+        "posted-by": 1,
+      };
+      const cursor = propertyColl
+        .find()
+        .sort({ "posted-date": 1 })
+        .limit(6)
         .project(projectFields);
       const result = await cursor.toArray();
       res.send(result);
