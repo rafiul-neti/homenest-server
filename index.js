@@ -31,6 +31,7 @@ async function run() {
 
     const database = client.db("homenest");
     const propertyColl = database.collection("all-properties");
+    const agentColl = database.collection("agents");
     const userColl = database.collection("users");
 
     // property related api's
@@ -106,6 +107,13 @@ async function run() {
     app.post("/user", async (req, res) => {
       const newUser = req.body;
       const result = await userColl.insertOne(newUser);
+      res.send(result);
+    });
+
+    // agents related api's
+    app.get("/agents", async (req, res) => {
+      const cursor = agentColl.find();
+      const result = await cursor.toArray();
       res.send(result);
     });
 
