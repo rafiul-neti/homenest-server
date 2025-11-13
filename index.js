@@ -147,7 +147,10 @@ async function run() {
 
     // ratings related api's
     app.get("/ratings", async (req, res) => {
-      const result = await ratingColl.find().toArray();
+      const users_rating = req.query.user;
+      const result = await ratingColl
+        .find({ reviewer_name: { $regex: users_rating, $options: "i" } })
+        .toArray();
       res.send(result);
     });
 
