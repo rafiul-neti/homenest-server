@@ -144,12 +144,19 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
-    
+
     // ratings related api's
-    app.get("/ratings", async(req,res)=>{
-      const result = await ratingColl.find().toArray()
-      res.send(result)
-    })
+    app.get("/ratings", async (req, res) => {
+      const result = await ratingColl.find().toArray();
+      res.send(result);
+    });
+
+    app.get("/property-rating/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { property_id: id };
+      const result = await ratingColl.find(query).toArray();
+      res.send(result);
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log(
