@@ -95,7 +95,13 @@ async function run() {
       res.send(result);
     });
 
-    app.get()
+    app.get("/serach", async (req, res) => {
+      const searched_text = req.query.search;
+      const result = await propertyColl
+        .find({ "property-name": searched_text })
+        .toArray();
+      res.send(result)  
+    });
 
     app.post("/add-property", async (req, res) => {
       const newProperty = req.body;
