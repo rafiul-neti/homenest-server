@@ -95,6 +95,8 @@ async function run() {
       res.send(result);
     });
 
+    app.get()
+
     app.post("/add-property", async (req, res) => {
       const newProperty = req.body;
       const result = await propertyColl.insertOne(newProperty);
