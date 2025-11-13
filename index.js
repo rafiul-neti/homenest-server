@@ -81,7 +81,19 @@ async function run() {
       res.send(result);
     });
 
-    
+    app.get("/my-properties", async (req, res) => {
+      const email = req.query.email;
+
+      const query = {};
+      if (email) {
+        query["poster-email"] = email;
+      }
+
+      const cursor = propertyColl.find(query);
+      const result = await cursor.toArray();
+
+      res.send(result);
+    });
 
     app.post("/add-property", async (req, res) => {
       const newProperty = req.body;
