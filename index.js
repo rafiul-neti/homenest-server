@@ -67,7 +67,7 @@ async function run() {
       };
       const cursor = propertyColl
         .find()
-        .sort({ "posted-date": 1 })
+        .sort({ "posted-date": -1 })
         .limit(6)
         .project(projectFields);
       const result = await cursor.toArray();
@@ -80,6 +80,8 @@ async function run() {
       const result = await propertyColl.findOne(query);
       res.send(result);
     });
+
+    
 
     app.post("/add-property", async (req, res) => {
       const newProperty = req.body;
