@@ -36,6 +36,8 @@ async function run() {
 
     // property related api's
     app.get("/all-properties", async (req, res) => {
+      const sort_order = req.query.sort;
+
       const projectFields = {
         _id: 1,
         "property-name": 1,
@@ -46,10 +48,13 @@ async function run() {
         thumbnail: 1,
         "posted-by": 1,
       };
-      const cursor = propertyColl
-        .find()
-        .sort({ "posted-date": 1 })
-        .project(projectFields);
+
+      const sort = {};
+      if (sort_order) {
+        sort.price = sort_order;
+      }
+
+      const cursor = propertyColl.find().sort(sort).project(projectFields);
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -95,12 +100,12 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/serach", async (req, res) => {
+    app.get("/search", async (req, res) => {
       const searched_text = req.query.search;
       const result = await propertyColl
-        .find({ "property-name": searched_text })
+        .find({ "property-name": { $regex: searched_text, $options: "i" } })
         .toArray();
-      res.send(result)  
+      res.send(result);
     });
 
     app.post("/add-property", async (req, res) => {
