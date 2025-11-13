@@ -31,6 +31,7 @@ async function run() {
 
     const database = client.db("homenest");
     const propertyColl = database.collection("all-properties");
+    const ratingColl = database.collection("ratings");
     const agentColl = database.collection("agents");
     const userColl = database.collection("users");
 
@@ -143,6 +144,12 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
+    
+    // ratings related api's
+    app.get("/ratings", async(req,res)=>{
+      const result = await ratingColl.find().toArray()
+      res.send(result)
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log(
